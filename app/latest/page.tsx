@@ -4,7 +4,7 @@ import { apps } from "@/lib/data";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
 
-const siteUrl = "https://enmodapk.vercel.app";
+const siteUrl = "https://genmod.in";
 
 export const metadata: Metadata = {
   title: "Latest Apps & Games – Latest Android Versions | GenMod",
