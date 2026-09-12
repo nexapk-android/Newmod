@@ -4,7 +4,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import "./globals.css";
 
-const siteUrl = "https://enmodapk.vercel.app";
+const siteUrl = "https://genmod.in";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
