@@ -39,27 +39,40 @@ function Info({
 export function AppDetail({ app }: { app: AppItem }) {
   const [open, setOpen] = useState<string | null>("Introduction");
 
-  const sections = [
-    ["Introduction", app.description],
-    ["Features", app.features.join(" • ")],
-    ["What's New", app.changelog.join(" • ")],
-    [
-      "How to Install",
-      "Download the authorized APK file, open it on your Android device and follow the installation prompts. Enable installation from your browser only when Android asks and when you trust the source.",
-    ],
-    [
-      "How to Use",
-      "Open the app after installation and follow its on-screen setup. For app-specific instructions, refer to the publisher documentation.",
-    ],
-    [
-      "Requirements",
-      `Android ${app.android}. Available storage: at least ${app.size} plus additional space required by the app.`,
-    ],
-    [
-      "FAQ",
-      "Version, availability and download information can change. Always verify the publisher and file before installing.",
-    ],
-  ];
+const sections = [
+  [
+    "Introduction",
+    `${app.name} is an Android ${app.category.toLowerCase()} application published by ${app.publisher}. Explore its latest version, features, screenshots, requirements and update information on GenMod.`,
+  ],
+  [
+    "Features",
+    app.features.length > 0
+      ? app.features.join(" • ")
+      : "Explore the main features and functionality available in this application.",
+  ],
+  [
+    "What's New",
+    app.changelog.length > 0
+      ? app.changelog.join(" • ")
+      : "Check this page for the latest version and update information.",
+  ],
+  [
+    "How to Install",
+    "Download the authorized application package from the official or authorized source, open it on your Android device and follow the installation prompts. Only install files from sources you trust.",
+  ],
+  [
+    "How to Use",
+    `Open ${app.name} after installation and follow its on-screen instructions. For detailed app-specific guidance, refer to the publisher's documentation.`,
+  ],
+  [
+    "Requirements",
+    `Android ${app.android}. Make sure your device has enough available storage for the application and its required data.`,
+  ],
+  [
+    "FAQ",
+    `What is ${app.name}? ${app.name} is a ${app.category.toLowerCase()} application published by ${app.publisher}. What Android version is required? This page lists Android ${app.android} as the current requirement. Always check the publisher's latest information before installation.`,
+  ],
+];
 
   const share = async () => {
     if (navigator.share) {
