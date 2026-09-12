@@ -42,12 +42,12 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${app.name} – Latest Version | GenMod`;
+  const title = `${app.name} – Latest Android Version`;
 
-  const description =
-    `Download ${app.name} latest version for Android. ` +
-    `Explore features, screenshots, requirements, version information and more on GenMod.`;
-
+const description =
+  `Explore ${app.name} for Android on GenMod. View the latest version, ` +
+  `features, screenshots, requirements, app information and updates.`;
+  
   const url = `${siteUrl}/app/${app.slug}`;
   const iconUrl = absoluteUrl(app.icon);
 
@@ -81,10 +81,11 @@ export async function generateMetadata({
     },
 
     twitter: {
-      card: "summary",
-      title,
-      description,
-      images: [iconUrl],
+  card: "summary_large_image",
+  title,
+  description,
+  images: [iconUrl],
+},
     },
   };
 }
