@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f6f8fc;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --text: #172033;
+  --muted: #697386;
+  --border: #e7eaf0;
+  --accent: #315bea;
+}
+
+.dark {
+  --bg: #0b1020;
+  --surface: #11182a;
+  --surface-2: #151e32;
+  --text: #f3f6ff;
+  --muted: #9aa6bc;
+  --border: #263149;
+  --accent: #6b83ff;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+
+.container {
+  width: min(1120px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.muted { color: var(--muted); }
+
+.section-title {
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .container { width: min(100% - 22px, 560px); }
+  .app-grid { grid-template-columns: 1fr; gap: 12px; }
+}
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: #cbd2df; border-radius: 999px; }
+.dark ::-webkit-scrollbar-thumb { background: #39445c; }
