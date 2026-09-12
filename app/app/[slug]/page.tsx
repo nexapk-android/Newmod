@@ -34,7 +34,7 @@ export async function generateMetadata({
 
   if (!app) {
     return {
-      title: "App Not Found | GenMod",
+      title: "App Not Found",
       robots: {
         index: false,
         follow: false,
@@ -44,10 +44,10 @@ export async function generateMetadata({
 
   const title = `${app.name} – Latest Android Version`;
 
-const description =
-  `Explore ${app.name} for Android on GenMod. View the latest version, ` +
-  `features, screenshots, requirements, app information and updates.`;
-  
+  const description =
+    `Explore ${app.name} for Android on GenMod. View the latest version, ` +
+    `features, screenshots, requirements, app information and updates.`;
+
   const url = `${siteUrl}/app/${app.slug}`;
   const iconUrl = absoluteUrl(app.icon);
 
@@ -70,6 +70,7 @@ const description =
       url,
       siteName: "GenMod",
       type: "website",
+      locale: "en_US",
       images: [
         {
           url: iconUrl,
@@ -81,11 +82,10 @@ const description =
     },
 
     twitter: {
-  card: "summary_large_image",
-  title,
-  description,
-  images: [iconUrl],
-},
+      card: "summary_large_image",
+      title,
+      description,
+      images: [iconUrl],
     },
   };
 }
@@ -110,13 +110,11 @@ export default function AppPage({
     .slice(0, 3);
 
   const appUrl = `${siteUrl}/app/${app.slug}`;
+
   const categoryUrl = `${siteUrl}/category/${categorySlug(
     app.category
   )}`;
 
-  /*
-   * Breadcrumb Schema
-   */
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -142,9 +140,6 @@ export default function AppPage({
     ],
   };
 
-  /*
-   * Software Application Schema
-   */
   const softwareSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -155,7 +150,6 @@ export default function AppPage({
     applicationCategory: app.category,
     operatingSystem: `Android ${app.android}`,
     softwareVersion: app.version,
-
     publisher: {
       "@type": "Organization",
       name: app.publisher,
@@ -164,8 +158,6 @@ export default function AppPage({
 
   return (
     <>
-      {/* SEO Structured Data */}
-
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -185,8 +177,6 @@ export default function AppPage({
           ),
         }}
       />
-
-      {/* Page Content */}
 
       <AppDetail app={app} />
 
