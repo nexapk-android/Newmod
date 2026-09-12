@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { apps, categories } from "@/lib/data";
 
-const siteUrl = "https://enmodapk.vercel.app";
+const siteUrl = "https://genmod.in";
 
 function categorySlug(category: string) {
   return category
