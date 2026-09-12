@@ -6,7 +6,7 @@ import { AppDetail } from "@/components/app-detail";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
 
-const siteUrl = "https://enmodapk.vercel.app";
+const siteUrl = "https://genmod.in";
 
 function categorySlug(category: string) {
   return category
