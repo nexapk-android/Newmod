@@ -4,7 +4,7 @@ import { FolderOpen } from "lucide-react";
 
 import { categories } from "@/lib/data";
 
-const siteUrl = "https://enmodapk.vercel.app";
+const siteUrl = "https://genmod.in";
 
 function categorySlug(category: string) {
   return category
