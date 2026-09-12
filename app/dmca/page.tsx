@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const siteUrl = "https://enmodapk.vercel.app";
+const siteUrl = "https://genmod.in";
 
 export const metadata: Metadata = {
   title: "DMCA & Copyright Policy",
