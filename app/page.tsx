@@ -1,16 +1,98 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Flame, Star, ShieldCheck, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  Flame,
+  Star,
+  ShieldCheck,
+  TrendingUp,
+} from "lucide-react";
+
 import { apps, categories } from "@/lib/data";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
+
+const siteUrl = "https://enmodapk.vercel.app";
+
+function categorySlug(category: string) {
+  return category
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/\s+/g, "-");
+}
+
+export const metadata: Metadata = {
+  title: "GenMod — Download & Enjoy",
+  description:
+    "Discover the latest Android apps and games on GenMod. Explore app features, screenshots, versions, requirements and updates in a fast, mobile-friendly experience.",
+
+  alternates: {
+    canonical: siteUrl,
+  },
+
+  openGraph: {
+    title: "GenMod — Download & Enjoy",
+    description:
+      "Discover the latest Android apps and games on GenMod. Explore features, screenshots, versions and updates.",
+    url: siteUrl,
+    siteName: "GenMod",
+    type: "website",
+    locale: "en_US",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "GenMod — Download & Enjoy",
+    description:
+      "Discover the latest Android apps and games on GenMod.",
+  },
+};
 
 export default function HomePage() {
   const trendingApps = [...apps]
     .sort((a, b) => b.votes - a.votes)
     .slice(0, 3);
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "GenMod",
+    url: siteUrl,
+    description:
+      "Discover the latest Android apps and games on GenMod.",
+  };
+
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "GenMod",
+    url: siteUrl,
+  };
+
   return (
     <>
+      {/* Homepage Structured Data */}
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(websiteSchema).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationSchema).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
+
       {/* Trending Hero */}
       <section className="container pt-8 sm:pt-12">
         <div className="overflow-hidden rounded-[30px] border border-[var(--border)] bg-[var(--surface)] shadow-soft">
@@ -27,8 +109,8 @@ export default function HomePage() {
                 </h1>
 
                 <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--muted)] sm:text-base">
-                  What everyone is downloading right now. Discover the apps
-                  getting the most attention on GenMod.
+                  Discover popular Android apps and games getting the most
+                  attention on GenMod.
                 </p>
               </div>
 
@@ -50,7 +132,6 @@ export default function HomePage() {
                 href={`/app/${app.slug}`}
                 className="group relative overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface-2)] p-4 transition duration-200 hover:-translate-y-1 hover:border-gen-500/40 hover:shadow-soft"
               >
-                {/* Rank */}
                 <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--surface)] text-sm font-black shadow-sm">
                   {index + 1}
                 </div>
@@ -67,6 +148,7 @@ export default function HomePage() {
                       <h2 className="line-clamp-1 text-[17px] font-extrabold tracking-[-0.02em] group-hover:text-gen-500">
                         {app.name}
                       </h2>
+
                       <ShieldCheck
                         size={16}
                         className="shrink-0 text-gen-500"
@@ -82,7 +164,9 @@ export default function HomePage() {
                         size={14}
                         className="fill-yellow-400 text-yellow-400"
                       />
+
                       <b>{app.rating}</b>
+
                       <span className="text-[var(--muted)]">
                         · {app.votes.toLocaleString()} downloads
                       </span>
@@ -117,7 +201,7 @@ export default function HomePage() {
         {/* Featured */}
         <Section
           title="Featured Apps"
-          subtitle="Hand-picked releases worth checking out."
+          subtitle="Explore popular Android apps and games selected for GenMod."
         >
           <div className="app-grid">
             {apps.slice(0, 6).map((app) => (
@@ -127,12 +211,15 @@ export default function HomePage() {
         </Section>
 
         {/* Categories */}
-        <Section title="Popular Categories">
+        <Section
+          title="Popular Categories"
+          subtitle="Browse Android apps by category."
+        >
           <div className="flex gap-2 overflow-x-auto pb-2">
             {categories.slice(0, 8).map((category) => (
               <Link
                 key={category}
-                href={`/category/${category.toLowerCase()}`}
+                href={`/category/${categorySlug(category)}`}
                 className="shrink-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm font-bold transition hover:border-gen-500 hover:text-gen-500"
               >
                 {category}
@@ -144,7 +231,7 @@ export default function HomePage() {
         {/* Latest */}
         <Section
           title="Latest Updates"
-          subtitle="Recently updated apps and games."
+          subtitle="Explore recently updated Android apps and games."
         >
           <div className="app-grid">
             {[...apps]
