@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import { apps } from "@/lib/data";
 import { AppCard } from "@/components/app-card";
 
-const siteUrl = "https://enmodapk.vercel.app";
+const siteUrl = "https://genmod.in";
 
 export const metadata: Metadata = {
   title: "Search Apps & Games | GenMod",
