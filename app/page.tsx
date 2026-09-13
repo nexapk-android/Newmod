@@ -49,7 +49,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const apps = await getPublishedApps();
   const trendingApps = [...apps]
     .sort((a, b) => b.votes - a.votes)
     .slice(0, 3);
