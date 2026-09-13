@@ -8,7 +8,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { apps, categories } from "@/lib/data";
+import { categories } from "@/lib/data";
+import { getPublishedApps } from "@/lib/apps";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
 
