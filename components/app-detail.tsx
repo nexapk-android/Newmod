@@ -121,7 +121,7 @@ export function AppDetail({ app }: { app: AppItem }) {
       description:
         "Follow the Instagram account to stay updated with GenMod content.",
       button: "Follow Instagram",
-      url: "https://www.instagram.com/instagram/",
+      url: "https://www.instagram.com/genmodapk?stkn=MXYybHlpNnp0OTd3aw==",
       icon: "instagram",
     },
     {
@@ -130,7 +130,7 @@ export function AppDetail({ app }: { app: AppItem }) {
       description:
         "Open Instagram, like the Reel and leave a good comment to support GenMod.",
       button: "Open Reel",
-      url: "https://www.instagram.com/reels/",
+      url: "https://www.instagram.com/reel/DdPGZG_zWYf/?stkn=MWp1cXFtbHpqNjcweA==",
       icon: "reel",
     },
   ];
