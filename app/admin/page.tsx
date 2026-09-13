@@ -4,17 +4,27 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   AppWindow,
+  Download,
   LogOut,
   Plus,
   Settings,
+  Star,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 
 export default function AdminDashboard() {
   const [email, setEmail] = useState("");
 
+  const [totalApps, setTotalApps] = useState(0);
+  const [publishedApps, setPublishedApps] = useState(0);
+  const [draftApps, setDraftApps] = useState(0);
+  const [totalDownloads, setTotalDownloads] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const loadUser = async () => {
+    const loadDashboard = async () => {
       const supabase = createClient();
 
       const {
@@ -24,9 +34,54 @@ export default function AdminDashboard() {
       if (user) {
         setEmail(user.email ?? "");
       }
+
+      const { data: apps, error } = await supabase
+        .from("apps")
+        .select("published, downloads, rating");
+
+      if (error) {
+        console.error("Dashboard stats error:", error);
+        setLoading(false);
+        return;
+      }
+
+      const rows = apps ?? [];
+
+      const total = rows.length;
+
+      const published = rows.filter(
+        (app) => app.published === true
+      ).length;
+
+      const drafts = rows.filter(
+        (app) => app.published !== true
+      ).length;
+
+      const downloads = rows.reduce(
+        (sum, app) => sum + (Number(app.downloads) || 0),
+        0
+      );
+
+      const ratings = rows
+        .map((app) => Number(app.rating))
+        .filter((rating) => Number.isFinite(rating) && rating > 0);
+
+      const average =
+        ratings.length > 0
+          ? ratings.reduce((sum, rating) => sum + rating, 0) /
+            ratings.length
+          : 0;
+
+      setTotalApps(total);
+      setPublishedApps(published);
+      setDraftApps(drafts);
+      setTotalDownloads(downloads);
+      setAverageRating(average);
+
+      setLoading(false);
     };
 
-    loadUser();
+    loadDashboard();
   }, []);
 
   async function handleLogout() {
@@ -35,6 +90,10 @@ export default function AdminDashboard() {
     await supabase.auth.signOut();
 
     window.location.href = "/admin/login";
+  }
+
+  function formatNumber(value: number) {
+    return value.toLocaleString("en-IN");
   }
 
   return (
@@ -68,7 +127,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats */}
-        <div className="mt-7 grid gap-4 sm:grid-cols-3">
+        <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Total Apps */}
           <div className="surface rounded-2xl p-5">
             <AppWindow
               size={22}
@@ -80,10 +140,11 @@ export default function AdminDashboard() {
             </p>
 
             <p className="mt-1 text-3xl font-black">
-              —
+              {loading ? "—" : formatNumber(totalApps)}
             </p>
           </div>
 
+          {/* Published */}
           <div className="surface rounded-2xl p-5">
             <AppWindow
               size={22}
@@ -95,10 +156,11 @@ export default function AdminDashboard() {
             </p>
 
             <p className="mt-1 text-3xl font-black">
-              —
+              {loading ? "—" : formatNumber(publishedApps)}
             </p>
           </div>
 
+          {/* Drafts */}
           <div className="surface rounded-2xl p-5">
             <Settings
               size={22}
@@ -110,12 +172,44 @@ export default function AdminDashboard() {
             </p>
 
             <p className="mt-1 text-3xl font-black">
-              —
+              {loading ? "—" : formatNumber(draftApps)}
+            </p>
+          </div>
+
+          {/* Downloads */}
+          <div className="surface rounded-2xl p-5">
+            <Download
+              size={22}
+              className="text-gen-500"
+            />
+
+            <p className="mt-4 text-sm text-[var(--muted)]">
+              Downloads
+            </p>
+
+            <p className="mt-1 text-3xl font-black">
+              {loading ? "—" : formatNumber(totalDownloads)}
+            </p>
+          </div>
+
+          {/* Rating */}
+          <div className="surface rounded-2xl p-5">
+            <Star
+              size={22}
+              className="fill-yellow-400 text-yellow-400"
+            />
+
+            <p className="mt-4 text-sm text-[var(--muted)]">
+              Avg. Rating
+            </p>
+
+            <p className="mt-1 text-3xl font-black">
+              {loading ? "—" : averageRating.toFixed(1)}
             </p>
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Quick Actions */}
         <section className="mt-6">
           <h2 className="text-xl font-black">
             Quick Actions
