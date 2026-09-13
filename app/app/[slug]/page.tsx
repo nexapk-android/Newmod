@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { apps, getApp } from "@/lib/data";
+import { getPublishedApp, getPublishedApps } from "@/lib/apps";
 import { AppDetail } from "@/components/app-detail";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
@@ -19,22 +19,16 @@ function absoluteUrl(path: string) {
   return path.startsWith("http") ? path : `${siteUrl}${path}`;
 }
 
-export function generateStaticParams() {
-  return apps.map((app) => ({
-    slug: app.slug,
-  }));
-}
-
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const app = getApp(params.slug);
+  const app = await getPublishedApp(params.slug);
 
   if (!app) {
     return {
-      title: "App Not Found",
+      title: "App Not Found | GenMod",
       robots: {
         index: false,
         follow: false,
@@ -90,22 +84,27 @@ export async function generateMetadata({
   };
 }
 
-export default function AppPage({
+export default async function AppPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const app = getApp(params.slug);
+  // Load published app directly from Supabase
+  const app = await getPublishedApp(params.slug);
 
+  // If app does not exist or is not published
   if (!app) {
     notFound();
   }
 
-  const related = apps
+  // Load other published apps for related section
+  const allApps = await getPublishedApps();
+
+  const related = allApps
     .filter(
-      (x) =>
-        x.slug !== app.slug &&
-        x.category === app.category
+      (item) =>
+        item.slug !== app.slug &&
+        item.category === app.category
     )
     .slice(0, 3);
 
@@ -148,8 +147,9 @@ export default function AppPage({
     url: appUrl,
     image: absoluteUrl(app.icon),
     applicationCategory: app.category,
-    operatingSystem: `Android ${app.android}`,
+    operatingSystem: app.android,
     softwareVersion: app.version,
+
     publisher: {
       "@type": "Organization",
       name: app.publisher,
@@ -158,6 +158,7 @@ export default function AppPage({
 
   return (
     <>
+      {/* Breadcrumb Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -168,6 +169,7 @@ export default function AppPage({
         }}
       />
 
+      {/* Software Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -178,8 +180,10 @@ export default function AppPage({
         }}
       />
 
+      {/* App Details */}
       <AppDetail app={app} />
 
+      {/* Related Apps */}
       {related.length > 0 && (
         <div className="container">
           <Section title="Related Apps">
