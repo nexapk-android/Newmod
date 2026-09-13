@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { apps } from "@/lib/data";
+import { getPublishedApps } from "@/lib/apps";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
 
@@ -8,6 +8,7 @@ const siteUrl = "https://genmod.in";
 
 export const metadata: Metadata = {
   title: "Latest Apps & Games – Latest Android Versions | GenMod",
+
   description:
     "Explore the latest Android apps and games on GenMod. Discover recently updated apps, new versions, features, screenshots and Android requirements.",
 
@@ -38,8 +39,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LatestPage() {
-  const latestApps = [...apps].reverse();
+export const revalidate = 60;
+
+export default async function LatestPage() {
+  // Get all published apps from Supabase.
+  // They are already sorted by updated_at in getPublishedApps().
+  const latestApps = await getPublishedApps();
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -77,8 +82,7 @@ export default function LatestPage() {
 
   return (
     <>
-      {/* Structured Data */}
-
+      {/* Breadcrumb Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -89,6 +93,7 @@ export default function LatestPage() {
         }}
       />
 
+      {/* Item List Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -100,20 +105,31 @@ export default function LatestPage() {
       />
 
       {/* Page Content */}
-
       <div className="container pt-8">
         <Section
           title="Latest Apps & Games"
           subtitle="Explore recently updated Android apps and games on GenMod."
         >
-          <div className="app-grid">
-            {latestApps.map((app) => (
-              <AppCard
-                key={app.slug}
-                app={app}
-              />
-            ))}
-          </div>
+          {latestApps.length > 0 ? (
+            <div className="app-grid">
+              {latestApps.map((app) => (
+                <AppCard
+                  key={app.slug}
+                  app={app}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="surface rounded-[24px] p-8 text-center">
+              <h2 className="text-xl font-extrabold">
+                No apps available yet
+              </h2>
+
+              <p className="mt-2 text-sm text-[var(--muted)]">
+                Published apps will appear here automatically.
+              </p>
+            </div>
+          )}
         </Section>
       </div>
     </>
