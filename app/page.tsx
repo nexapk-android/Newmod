@@ -256,6 +256,14 @@ export default async function HomePage() {
           </div>
         </Section>
 
+                {/* Telegram Support */}
+        <Section
+          title="Stay Connected"
+          subtitle="Get GenMod updates, news and support on Telegram."
+        >
+          <TelegramSupport />
+        </Section>
+
         {/* Why GenMod */}
         <Section title="Why GenMod?">
           <div className="grid gap-3 sm:grid-cols-3">
