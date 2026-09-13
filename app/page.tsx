@@ -10,6 +10,7 @@ import {
 
 import { categories } from "@/lib/data";
 import { getPublishedApps } from "@/lib/apps";
+import { TelegramSupport } from "@/components/telegram-support";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
 
