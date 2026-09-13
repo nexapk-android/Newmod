@@ -203,14 +203,12 @@ export default function NewAppPage() {
       const supabase = createClient();
 
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  data: { session },
+} = await supabase.auth.getSession();
 
-      if (!user) {
-        throw new Error(
-          "You must be logged in as admin."
-        );
-      }
+if (!session?.user) {
+  throw new Error("Your admin session has expired. Please login again.");
+}
 
       if (!form.name.trim()) {
         throw new Error("App name is required.");
@@ -307,7 +305,9 @@ export default function NewAppPage() {
         });
 
       if (error) {
-        throw new Error(error.message);
+  throw new Error(
+    `Storage upload failed: ${error.message}`
+  );
       }
 
       setMessage(
@@ -926,8 +926,8 @@ Improved experience`}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gen-500 px-7 font-extrabold text-white shadow-lg hover:bg-gen-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
-                "Uploading & Saving..."
-              ) : (
+  message || "Saving..."
+) : (
                 <>
                   <Save size={18} />
                   Save App
