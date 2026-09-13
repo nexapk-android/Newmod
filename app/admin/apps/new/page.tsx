@@ -4,8 +4,10 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import {
   ArrowLeft,
+  ImagePlus,
   Save,
-  Plus,
+  Upload,
+  X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 
@@ -24,10 +26,19 @@ const categories = [
   "Lifestyle",
 ];
 
+const MAX_SCREENSHOTS = 6;
+
 export default function NewAppPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const [iconFile, setIconFile] = useState<File | null>(null);
+  const [screenshotFiles, setScreenshotFiles] = useState<File[]>(
+    []
+  );
+
+  const [iconPreview, setIconPreview] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -76,6 +87,109 @@ export default function NewAppPage() {
     }));
   }
 
+  function handleIconChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Icon must be an image file.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Icon must be smaller than 5 MB.");
+      return;
+    }
+
+    setError("");
+    setIconFile(file);
+
+    const previewUrl = URL.createObjectURL(file);
+    setIconPreview(previewUrl);
+  }
+
+  function handleScreenshotsChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const files = Array.from(event.target.files ?? []);
+
+    if (files.length === 0) return;
+
+    if (files.some((file) => !file.type.startsWith("image/"))) {
+      setError("All screenshots must be image files.");
+      return;
+    }
+
+    if (
+      files.some(
+        (file) => file.size > 8 * 1024 * 1024
+      )
+    ) {
+      setError("Each screenshot must be smaller than 8 MB.");
+      return;
+    }
+
+    if (
+      screenshotFiles.length + files.length >
+      MAX_SCREENSHOTS
+    ) {
+      setError(
+        `You can upload maximum ${MAX_SCREENSHOTS} screenshots.`
+      );
+      return;
+    }
+
+    setError("");
+
+    setScreenshotFiles((current) => [
+      ...current,
+      ...files,
+    ]);
+  }
+
+  function removeScreenshot(index: number) {
+    setScreenshotFiles((current) =>
+      current.filter((_, i) => i !== index)
+    );
+  }
+
+  async function uploadFile(
+    supabase: ReturnType<typeof createClient>,
+    file: File,
+    folder: string,
+    slug: string
+  ) {
+    const extension =
+      file.name.split(".").pop()?.toLowerCase() || "jpg";
+
+    const safeName = `${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 9)}.${extension}`;
+
+    const path = `${folder}/${slug}/${safeName}`;
+
+    const { error } = await supabase.storage
+      .from("app-assets")
+      .upload(path, file, {
+        cacheControl: "31536000",
+        upsert: false,
+        contentType: file.type,
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const { data } = supabase.storage
+      .from("app-assets")
+      .getPublicUrl(path);
+
+    return data.publicUrl;
+  }
+
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
   ) {
@@ -85,72 +199,135 @@ export default function NewAppPage() {
     setMessage("");
     setLoading(true);
 
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      setError("You must be logged in as admin.");
+      if (!user) {
+        throw new Error(
+          "You must be logged in as admin."
+        );
+      }
+
+      if (!form.name.trim()) {
+        throw new Error("App name is required.");
+      }
+
+      if (!form.slug.trim()) {
+        throw new Error("Slug is required.");
+      }
+
+      if (!iconFile) {
+        throw new Error(
+          "Please select an app icon."
+        );
+      }
+
+      setMessage("Uploading app icon...");
+
+      const iconUrl = await uploadFile(
+        supabase,
+        iconFile,
+        "icons",
+        form.slug.trim()
+      );
+
+      const screenshotUrls: string[] = [];
+
+      for (let i = 0; i < screenshotFiles.length; i++) {
+        setMessage(
+          `Uploading screenshot ${i + 1} of ${screenshotFiles.length}...`
+        );
+
+        const url = await uploadFile(
+          supabase,
+          screenshotFiles[i],
+          "screenshots",
+          form.slug.trim()
+        );
+
+        screenshotUrls.push(url);
+      }
+
+      setMessage("Saving app information...");
+
+      const { error } = await supabase
+        .from("apps")
+        .insert({
+          name: form.name.trim(),
+          slug: form.slug.trim(),
+          category: form.category,
+          publisher: form.publisher.trim(),
+          version: form.version.trim(),
+          size: form.size.trim(),
+          android: form.android.trim(),
+          description: form.description.trim(),
+
+          icon: iconUrl,
+
+          screenshots: screenshotUrls,
+
+          features: form.features
+            .split("\n")
+            .map((item) => item.trim())
+            .filter(Boolean),
+
+          changelog: form.changelog
+            .split("\n")
+            .map((item) => item.trim())
+            .filter(Boolean),
+
+          download_url: form.download_url.trim(),
+
+          is_mod: form.is_mod,
+
+          mod_label: form.is_mod
+            ? form.mod_label.trim() || "MOD"
+            : null,
+
+          mod_features: form.mod_features
+            .split("\n")
+            .map((item) => item.trim())
+            .filter(Boolean),
+
+          rating: form.rating
+            ? Number(form.rating)
+            : null,
+
+          votes: Number(form.votes) || 0,
+
+          downloads: Number(form.downloads) || 0,
+
+          published: form.published,
+
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      setMessage(
+        "App created successfully! Redirecting..."
+      );
+
+      setTimeout(() => {
+        window.location.href = "/admin/apps";
+      }, 800);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Something went wrong.";
+
+      setError(message);
+      setMessage("");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const { error } = await supabase.from("apps").insert({
-      name: form.name.trim(),
-      slug: form.slug.trim(),
-      category: form.category,
-      publisher: form.publisher.trim(),
-      version: form.version.trim(),
-      size: form.size.trim(),
-      android: form.android.trim(),
-      description: form.description.trim(),
-
-      features: form.features
-        .split("\n")
-        .map((item) => item.trim())
-        .filter(Boolean),
-
-      changelog: form.changelog
-        .split("\n")
-        .map((item) => item.trim())
-        .filter(Boolean),
-
-      download_url: form.download_url.trim(),
-
-      is_mod: form.is_mod,
-      mod_label: form.is_mod
-        ? form.mod_label.trim() || "MOD"
-        : null,
-
-      mod_features: form.mod_features
-        .split("\n")
-        .map((item) => item.trim())
-        .filter(Boolean),
-
-      rating: form.rating
-        ? Number(form.rating)
-        : null,
-
-      votes: Number(form.votes) || 0,
-      downloads: Number(form.downloads) || 0,
-
-      published: form.published,
-      updated_at: new Date().toISOString(),
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
-    }
-
-    setMessage("App created successfully!");
-
-    setTimeout(() => {
-      window.location.href = "/admin/apps";
-    }, 700);
   }
 
   return (
@@ -171,7 +348,7 @@ export default function NewAppPage() {
           </h1>
 
           <p className="mt-1 text-sm text-[var(--muted)]">
-            Create a new GenMod app entry.
+            Create and publish a new app entry.
           </p>
         </div>
 
@@ -181,6 +358,7 @@ export default function NewAppPage() {
         >
 
           {/* BASIC INFO */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <h2 className="text-xl font-black">
               Basic Information
@@ -213,7 +391,10 @@ export default function NewAppPage() {
                   required
                   value={form.slug}
                   onChange={(e) =>
-                    updateField("slug", e.target.value)
+                    updateField(
+                      "slug",
+                      e.target.value
+                    )
                   }
                   placeholder="example-app"
                   className="admin-input"
@@ -292,7 +473,10 @@ export default function NewAppPage() {
                 <input
                   value={form.size}
                   onChange={(e) =>
-                    updateField("size", e.target.value)
+                    updateField(
+                      "size",
+                      e.target.value
+                    )
                   }
                   placeholder="120 MB"
                   className="admin-input"
@@ -320,7 +504,118 @@ export default function NewAppPage() {
             </div>
           </section>
 
+          {/* ICON */}
+
+          <section className="surface rounded-[26px] p-5 sm:p-6">
+            <h2 className="text-xl font-black">
+              App Icon
+            </h2>
+
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Recommended: square PNG/JPG, maximum 5 MB.
+            </p>
+
+            <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+
+              {iconPreview ? (
+                <img
+                  src={iconPreview}
+                  alt="Icon preview"
+                  className="h-28 w-28 rounded-[24px] object-cover shadow-lg"
+                />
+              ) : (
+                <div className="flex h-28 w-28 items-center justify-center rounded-[24px] bg-[var(--surface-2)] text-[var(--muted)]">
+                  <ImagePlus size={32} />
+                </div>
+              )}
+
+              <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-[var(--border)] px-4 text-sm font-bold hover:bg-[var(--surface-2)]">
+                <Upload size={17} />
+                Choose Icon
+
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleIconChange}
+                  className="hidden"
+                />
+              </label>
+
+            </div>
+          </section>
+
+          {/* SCREENSHOTS */}
+
+          <section className="surface rounded-[26px] p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black">
+                  Screenshots
+                </h2>
+
+                <p className="mt-1 text-xs text-[var(--muted)]">
+                  Upload up to {MAX_SCREENSHOTS} screenshots.
+                </p>
+              </div>
+
+              <span className="rounded-full bg-[var(--surface-2)] px-3 py-1 text-xs font-bold">
+                {screenshotFiles.length}/{MAX_SCREENSHOTS}
+              </span>
+            </div>
+
+            <label className="mt-5 flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border)] text-center transition hover:border-gen-500 hover:bg-[var(--surface-2)]">
+              <ImagePlus size={28} className="text-gen-500" />
+
+              <span className="mt-2 text-sm font-bold">
+                Add Screenshots
+              </span>
+
+              <span className="mt-1 text-xs text-[var(--muted)]">
+                PNG, JPG or WebP · Max 8 MB each
+              </span>
+
+              <input
+                type="file"
+                multiple
+                accept="image/png,image/jpeg,image/webp"
+                onChange={handleScreenshotsChange}
+                className="hidden"
+              />
+            </label>
+
+            {screenshotFiles.length > 0 && (
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {screenshotFiles.map(
+                  (file, index) => (
+                    <div
+                      key={`${file.name}-${index}`}
+                      className="group relative overflow-hidden rounded-2xl bg-[var(--surface-2)]"
+                    >
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Screenshot ${index + 1}`}
+                        className="aspect-[9/16] w-full object-cover"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeScreenshot(index)
+                        }
+                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white"
+                        aria-label="Remove screenshot"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+          </section>
+
           {/* DESCRIPTION */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <h2 className="text-xl font-black">
               Description
@@ -336,19 +631,20 @@ export default function NewAppPage() {
                   e.target.value
                 )
               }
-              placeholder="Write a useful description of the app..."
+              placeholder="Write a useful description..."
               className="admin-input mt-5 min-h-32 resize-y"
             />
           </section>
 
           {/* FEATURES */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <h2 className="text-xl font-black">
               Features
             </h2>
 
             <p className="mt-1 text-xs text-[var(--muted)]">
-              Enter one feature per line.
+              One feature per line.
             </p>
 
             <textarea
@@ -369,13 +665,14 @@ Easy to use`}
           </section>
 
           {/* CHANGELOG */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <h2 className="text-xl font-black">
               What's New
             </h2>
 
             <p className="mt-1 text-xs text-[var(--muted)]">
-              Enter one update per line.
+              One update per line.
             </p>
 
             <textarea
@@ -389,12 +686,13 @@ Easy to use`}
               }
               placeholder={`Performance improvements
 Bug fixes
-Improved user experience`}
+Improved experience`}
               className="admin-input mt-4 min-h-32 resize-y"
             />
           </section>
 
-          {/* MOD */}
+          {/* APP TYPE */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
@@ -403,8 +701,8 @@ Improved user experience`}
                 </h2>
 
                 <p className="mt-1 text-xs text-[var(--muted)]">
-                  Mark the entry according to the rights and
-                  authorization you have for the distributed package.
+                  Use this according to your authorization
+                  to distribute the package.
                 </p>
               </div>
 
@@ -466,9 +764,6 @@ Improved user experience`}
                         e.target.value
                       )
                     }
-                    placeholder={`Premium features
-Additional options
-Enhanced experience`}
                     className="admin-input min-h-32 resize-y"
                   />
                 </div>
@@ -478,6 +773,7 @@ Enhanced experience`}
           </section>
 
           {/* STATS */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <h2 className="text-xl font-black">
               Stats
@@ -549,6 +845,7 @@ Enhanced experience`}
           </section>
 
           {/* DOWNLOAD */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <h2 className="text-xl font-black">
               Download
@@ -573,6 +870,7 @@ Enhanced experience`}
           </section>
 
           {/* PUBLISH */}
+
           <section className="surface rounded-[26px] p-5 sm:p-6">
             <label className="flex cursor-pointer items-center gap-3">
               <input
@@ -593,10 +891,11 @@ Enhanced experience`}
             </label>
 
             <p className="mt-2 text-xs text-[var(--muted)]">
-              Keep this unchecked if you want to save it as
-              a draft.
+              Unchecked = Draft.
             </p>
           </section>
+
+          {/* MESSAGES */}
 
           {error && (
             <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm font-semibold text-red-600">
@@ -610,11 +909,13 @@ Enhanced experience`}
             </div>
           )}
 
+          {/* ACTIONS */}
+
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
 
             <Link
               href="/admin/apps"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-[var(--border)] px-6 font-bold hover:bg-[var(--surface-2)]"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--border)] px-6 font-bold hover:bg-[var(--surface-2)]"
             >
               Cancel
             </Link>
@@ -625,7 +926,7 @@ Enhanced experience`}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gen-500 px-7 font-extrabold text-white shadow-lg hover:bg-gen-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
-                "Saving..."
+                "Uploading & Saving..."
               ) : (
                 <>
                   <Save size={18} />
