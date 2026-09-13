@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FolderOpen } from "lucide-react";
 
 import { categories } from "@/lib/data";
+import { getPublishedApps } from "@/lib/apps";
 
 const siteUrl = "https://genmod.in";
 
@@ -15,6 +16,7 @@ function categorySlug(category: string) {
 
 export const metadata: Metadata = {
   title: "App Categories – Browse Android Apps | GenMod",
+
   description:
     "Browse GenMod app categories and discover Android apps by category. Explore apps, features, versions, screenshots and requirements.",
 
@@ -45,7 +47,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CategoriesPage() {
+export const revalidate = 60;
+
+export default async function CategoriesPage() {
+  // Get only published apps from Supabase
+  const apps = await getPublishedApps();
+
+  // Count published apps in every category
+  const categoryCounts = categories.reduce(
+    (counts, category) => {
+      counts[category] = apps.filter(
+        (app) =>
+          app.category.toLowerCase() === category.toLowerCase()
+      ).length;
+
+      return counts;
+    },
+    {} as Record<string, number>
+  );
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -82,8 +102,7 @@ export default function CategoriesPage() {
 
   return (
     <>
-      {/* Structured Data */}
-
+      {/* Breadcrumb Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -94,6 +113,7 @@ export default function CategoriesPage() {
         }}
       />
 
+      {/* ItemList Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -105,7 +125,6 @@ export default function CategoriesPage() {
       />
 
       {/* Page Content */}
-
       <div className="container pt-8">
         <h1 className="section-title">
           App Categories
@@ -116,27 +135,31 @@ export default function CategoriesPage() {
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category) => (
-            <Link
-              key={category}
-              href={`/category/${categorySlug(category)}`}
-              className="surface flex items-center gap-4 rounded-3xl p-5 shadow-card hover:border-gen-500"
-            >
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gen-500/10 text-gen-500">
-                <FolderOpen size={22} />
-              </span>
+          {categories.map((category) => {
+            const count = categoryCounts[category] || 0;
 
-              <div>
-                <h2 className="font-extrabold">
-                  {category}
-                </h2>
+            return (
+              <Link
+                key={category}
+                href={`/category/${categorySlug(category)}`}
+                className="surface flex items-center gap-4 rounded-3xl p-5 shadow-card transition hover:-translate-y-0.5 hover:border-gen-500"
+              >
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gen-500/10 text-gen-500">
+                  <FolderOpen size={22} />
+                </span>
 
-                <p className="mt-1 text-xs text-[var(--muted)]">
-                  Explore {category.toLowerCase()} apps
-                </p>
-              </div>
-            </Link>
-          ))}
+                <div className="min-w-0">
+                  <h2 className="font-extrabold">
+                    {category}
+                  </h2>
+
+                  <p className="mt-1 text-xs text-[var(--muted)]">
+                    {count} {count === 1 ? "app" : "apps"}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>
