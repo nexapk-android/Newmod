@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { apps, categories } from "@/lib/data";
+import { categories } from "@/lib/data";
+import { getPublishedApps } from "@/lib/apps";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
 
@@ -18,12 +19,6 @@ function getCategoryFromSlug(slug: string) {
   return categories.find(
     (category) => categorySlug(category) === slug
   );
-}
-
-export function generateStaticParams() {
-  return categories.map((category) => ({
-    slug: categorySlug(category),
-  }));
 }
 
 export async function generateMetadata({
@@ -81,7 +76,9 @@ export async function generateMetadata({
   };
 }
 
-export default function CategoryPage({
+export const revalidate = 60;
+
+export default async function CategoryPage({
   params,
 }: {
   params: { slug: string };
@@ -92,12 +89,18 @@ export default function CategoryPage({
     notFound();
   }
 
-  const items = apps.filter(
+  // Get published apps from Supabase
+  const publishedApps = await getPublishedApps();
+
+  // Show only apps belonging to this category
+  const items = publishedApps.filter(
     (app) =>
       app.category.toLowerCase() === category.toLowerCase()
   );
 
-  const categoryUrl = `${siteUrl}/category/${categorySlug(category)}`;
+  const categoryUrl = `${siteUrl}/category/${categorySlug(
+    category
+  )}`;
 
   /*
    * Breadcrumb Schema
@@ -141,8 +144,7 @@ export default function CategoryPage({
 
   return (
     <>
-      {/* Structured Data */}
-
+      {/* Breadcrumb Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -153,6 +155,7 @@ export default function CategoryPage({
         }}
       />
 
+      {/* ItemList Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -164,13 +167,12 @@ export default function CategoryPage({
       />
 
       {/* Category Content */}
-
       <div className="container pt-8">
         <Section
           title={`${category} Apps`}
           subtitle={`Browse the latest ${category.toLowerCase()} apps on GenMod.`}
         >
-          {items.length ? (
+          {items.length > 0 ? (
             <div className="app-grid">
               {items.map((app) => (
                 <AppCard
