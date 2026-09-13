@@ -52,7 +52,6 @@ function mapDbApp(app: DbApp): AppItem {
     rating: Number(app.rating || 0),
     votes: Number(app.votes || 0),
     downloads: Number(app.downloads || 0),
-
     modInfo: {
       isMod: Boolean(app.is_mod),
       label: app.mod_label || "MOD",
@@ -71,13 +70,12 @@ export async function getPublishedApps(): Promise<AppItem[]> {
     .order("updated_at", { ascending: false });
 
   if (error) {
-    console.error("Failed to load published apps:", error);
-    return [];
+    throw new Error(
+      `Failed to load published apps: ${error.message}`
+    );
   }
 
-  return (data || []).map((app) =>
-    mapDbApp(app as DbApp)
-  );
+  return (data || []).map((app) => mapDbApp(app as DbApp));
 }
 
 export async function getPublishedApp(
