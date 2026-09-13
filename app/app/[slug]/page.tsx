@@ -5,6 +5,7 @@ import { getPublishedApp, getPublishedApps } from "@/lib/apps";
 import { AppDetail } from "@/components/app-detail";
 import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
+import { TelegramSupport } from "@/components/telegram-support";
 
 const siteUrl = "https://genmod.in";
 
@@ -182,6 +183,11 @@ export default async function AppPage({
 
       {/* App Details */}
       <AppDetail app={app} />
+
+      {/* Telegram Support */}
+      <div className="container mt-8">
+        <TelegramSupport />
+      </div>
 
       {/* Related Apps */}
       {related.length > 0 && (
