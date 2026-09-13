@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Search } from "lucide-react";
 
-import { apps } from "@/lib/data";
+import { getPublishedApps } from "@/lib/apps";
 import { AppCard } from "@/components/app-card";
 
 const siteUrl = "https://genmod.in";
 
 export const metadata: Metadata = {
   title: "Search Apps & Games | GenMod",
+
   description:
     "Search Android apps and games on GenMod by app name, publisher, category or description.",
 
@@ -38,12 +39,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SearchPage({
+export const revalidate = 60;
+
+export default async function SearchPage({
   searchParams,
 }: {
   searchParams: { q?: string };
 }) {
   const q = (searchParams.q || "").trim().toLowerCase();
+
+  // Get only published apps from Supabase
+  const apps = await getPublishedApps();
 
   const results = q
     ? apps.filter((app) =>
@@ -106,7 +112,7 @@ export default function SearchPage({
               </b>
             </p>
 
-            {results.length ? (
+            {results.length > 0 ? (
               <div className="app-grid">
                 {results.map((app) => (
                   <AppCard
