@@ -66,6 +66,10 @@ export function AppDetail({ app }: { app: AppItem }) {
     []
   );
 
+  const [verifyingTask, setVerifyingTask] = useState<string | null>(
+    null
+  );
+
   const sections = [
     [
       "Introduction",
@@ -150,16 +154,38 @@ export function AppDetail({ app }: { app: AppItem }) {
     }
   };
 
-  const markCompleted = (taskId: string) => {
-    setCompletedTasks((current) =>
-      current.includes(taskId)
-        ? current
-        : [...current, taskId]
+  const verifyTask = (task: Task) => {
+    if (completedTasks.includes(task.id)) {
+      return;
+    }
+
+    if (verifyingTask !== null) {
+      return;
+    }
+
+    window.open(
+      task.url,
+      "_blank",
+      "noopener,noreferrer"
     );
+
+    setVerifyingTask(task.id);
+
+    window.setTimeout(() => {
+      setCompletedTasks((current) =>
+        current.includes(task.id)
+          ? current
+          : [...current, task.id]
+      );
+
+      setVerifyingTask(null);
+    }, 6000);
   };
 
   const continueDownload = () => {
-    if (!allCompleted) return;
+    if (!allCompleted) {
+      return;
+    }
 
     window.location.href = app.downloadUrl;
   };
@@ -193,7 +219,7 @@ export function AppDetail({ app }: { app: AppItem }) {
         <section className="surface mt-4 rounded-[30px] p-5 shadow-soft sm:p-8">
           <div className="flex flex-col gap-6 sm:flex-row">
 
-            {/* Icon */}
+            {/* App Icon */}
             <div className="relative mx-auto h-28 w-28 shrink-0 sm:mx-0">
               <img
                 src={app.icon}
@@ -211,6 +237,7 @@ export function AppDetail({ app }: { app: AppItem }) {
             <div className="min-w-0 flex-1">
 
               <div className="flex flex-wrap items-center gap-2">
+
                 <h1 className="text-3xl font-black tracking-[-0.045em] sm:text-4xl">
                   {app.name}
                 </h1>
@@ -220,6 +247,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                   className="text-gen-500"
                   aria-label="Verified"
                 />
+
               </div>
 
               <p className="mt-1 text-sm text-[var(--muted)]">
@@ -229,6 +257,7 @@ export function AppDetail({ app }: { app: AppItem }) {
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
 
                 <span className="inline-flex items-center gap-1">
+
                   <Star
                     size={16}
                     className="fill-yellow-400 text-yellow-400"
@@ -239,6 +268,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                   <span className="text-[var(--muted)]">
                     ({app.votes.toLocaleString()})
                   </span>
+
                 </span>
 
                 <span className="rounded-full bg-[var(--surface-2)] px-3 py-1 font-semibold">
@@ -255,6 +285,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                     {app.modInfo.label || "MOD"}
                   </span>
                 )}
+
               </div>
 
               <p className="mt-4 max-w-3xl leading-7 text-[var(--muted)]">
@@ -263,7 +294,7 @@ export function AppDetail({ app }: { app: AppItem }) {
 
               <div className="mt-5 flex flex-col gap-2 sm:flex-row">
 
-                {/* Download */}
+                {/* Download Button */}
                 <button
                   onClick={() => setShowTasks(true)}
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gen-500 px-6 font-extrabold text-white shadow-lg transition hover:bg-gen-600"
@@ -343,6 +374,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                 </p>
 
               </div>
+
             </div>
 
             {app.modInfo.features.length > 0 && (
@@ -454,7 +486,7 @@ export function AppDetail({ app }: { app: AppItem }) {
 
           <div className="relative max-h-[88vh] w-full max-w-sm overflow-y-auto rounded-[26px] border border-white/10 bg-[#101313] text-white shadow-2xl">
 
-            {/* LEFT CLOSE */}
+            {/* Top Left X */}
             <button
               onClick={() =>
                 setShowTasks(false)
@@ -465,7 +497,7 @@ export function AppDetail({ app }: { app: AppItem }) {
               <X size={17} />
             </button>
 
-            {/* RIGHT CLOSE */}
+            {/* Top Right X */}
             <button
               onClick={() =>
                 setShowTasks(false)
@@ -476,7 +508,7 @@ export function AppDetail({ app }: { app: AppItem }) {
               <X size={17} />
             </button>
 
-            {/* HEADER */}
+            {/* Header */}
             <div className="border-b border-white/10 px-5 pb-4 pt-14">
 
               <div className="text-center">
@@ -496,7 +528,7 @@ export function AppDetail({ app }: { app: AppItem }) {
 
               </div>
 
-              {/* PROGRESS */}
+              {/* Progress */}
               <div className="mt-4">
 
                 <div className="mb-1.5 flex items-center justify-between text-[10px] font-bold">
@@ -528,7 +560,7 @@ export function AppDetail({ app }: { app: AppItem }) {
               </div>
             </div>
 
-            {/* TASKS */}
+            {/* Tasks */}
             <div className="space-y-2.5 p-4">
 
               {tasks.map(
@@ -538,30 +570,37 @@ export function AppDetail({ app }: { app: AppItem }) {
                       task.id
                     );
 
+                  const verifying =
+                    verifyingTask === task.id;
+
                   return (
                     <div
                       key={task.id}
-                      className={`rounded-[18px] border p-3 transition-all duration-300 ${
+                      className={`rounded-[18px] border p-3 transition-all duration-500 ${
                         completed
                           ? "border-emerald-400/30 bg-emerald-400/10"
-                          : "border-white/10 bg-white/[0.035]"
+                          : verifying
+                            ? "border-gen-500/30 bg-gen-500/10"
+                            : "border-white/10 bg-white/[0.035]"
                       }`}
                     >
 
                       <div className="flex gap-3">
 
-                        {/* TASK ICON */}
+                        {/* Task Icon */}
                         <div
-                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-500 ${
                             completed
-                              ? "bg-emerald-500 text-white"
-                              : task.icon ===
-                                  "telegram"
-                                ? "bg-[#229ED9] text-white"
+                              ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                              : verifying
+                                ? "bg-gen-500 text-white"
                                 : task.icon ===
-                                    "instagram"
-                                  ? "bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white"
-                                  : "bg-gradient-to-br from-pink-500 via-red-500 to-orange-400 text-white"
+                                    "telegram"
+                                  ? "bg-[#229ED9] text-white"
+                                  : task.icon ===
+                                      "instagram"
+                                    ? "bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white"
+                                    : "bg-gradient-to-br from-pink-500 via-red-500 to-orange-400 text-white"
                           }`}
                         >
 
@@ -588,7 +627,7 @@ export function AppDetail({ app }: { app: AppItem }) {
 
                         </div>
 
-                        {/* TASK CONTENT */}
+                        {/* Content */}
                         <div className="min-w-0 flex-1">
 
                           <div className="flex items-start justify-between gap-2">
@@ -607,7 +646,7 @@ export function AppDetail({ app }: { app: AppItem }) {
 
                             {completed && (
                               <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[8px] font-black text-emerald-400">
-                                DONE
+                                VERIFIED
                               </span>
                             )}
 
@@ -618,55 +657,64 @@ export function AppDetail({ app }: { app: AppItem }) {
                           </p>
 
                           {!completed ? (
-                            <div className="mt-2.5 flex gap-1.5">
+                            <div className="mt-2.5">
 
-                              {/* OPEN TASK */}
-                              <a
-                                href={task.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[10px] font-extrabold text-white transition hover:-translate-y-0.5 ${
-                                  task.icon ===
-                                  "telegram"
-                                    ? "bg-[#229ED9] hover:bg-[#1d8fc4]"
+                              <button
+                                onClick={() =>
+                                  verifyTask(task)
+                                }
+                                disabled={
+                                  verifyingTask !==
+                                  null
+                                }
+                                className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[10px] font-extrabold text-white transition-all duration-300 ${
+                                  verifying
+                                    ? "cursor-wait bg-gen-500/80"
                                     : task.icon ===
-                                        "instagram"
-                                      ? "bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#FCAF45]"
-                                      : "bg-gradient-to-r from-pink-500 via-red-500 to-orange-400"
+                                        "telegram"
+                                      ? "bg-[#229ED9] hover:-translate-y-0.5 hover:bg-[#1d8fc4]"
+                                      : task.icon ===
+                                          "instagram"
+                                        ? "bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#FCAF45] hover:-translate-y-0.5"
+                                        : "bg-gradient-to-r from-pink-500 via-red-500 to-orange-400 hover:-translate-y-0.5"
                                 }`}
                               >
 
-                                {task.button}
+                                {verifying ? (
+                                  <>
+                                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
 
-                                <ArrowUpRight
-                                  size={11}
-                                />
+                                    Verifying...
+                                  </>
+                                ) : (
+                                  <>
+                                    {task.button}
 
-                              </a>
-
-                              {/* COMPLETED */}
-                              <button
-                                onClick={() =>
-                                  markCompleted(
-                                    task.id
-                                  )
-                                }
-                                className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[10px] font-bold text-white/65 transition hover:bg-white/10 hover:text-white"
-                              >
-
-                                <Check size={11} />
-
-                                I Completed
+                                    <ArrowUpRight
+                                      size={11}
+                                    />
+                                  </>
+                                )}
 
                               </button>
 
+                              {verifying && (
+                                <div className="mt-2 flex items-center gap-1.5 text-[9px] font-semibold text-white/40">
+
+                                  <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-gen-400" />
+
+                                  Verifying your action, please wait...
+
+                                </div>
+                              )}
+
                             </div>
                           ) : (
-                            <div className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400">
+                            <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-[10px] font-black text-emerald-400">
 
-                              <CheckCircle2 size={12} />
+                              <CheckCircle2 size={13} />
 
-                              Task completed
+                              Verified successfully
 
                             </div>
                           )}
@@ -678,7 +726,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                 }
               )}
 
-              {/* CONTINUE DOWNLOAD */}
+              {/* Continue */}
               <div className="pt-1">
 
                 <button
@@ -706,7 +754,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                 </button>
 
                 <p className="mt-2 text-center text-[9px] leading-4 text-white/25">
-                  Complete the tasks above and confirm when finished.
+                  Complete the tasks above to unlock your download.
                 </p>
 
               </div>
