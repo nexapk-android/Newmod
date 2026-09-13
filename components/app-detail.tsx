@@ -13,7 +13,6 @@ import {
   HardDrive,
   Heart,
   Instagram,
-  MessageCircle,
   Send,
   Share2,
   ShieldCheck,
@@ -37,8 +36,14 @@ function Info({
   return (
     <div className="surface rounded-2xl p-4">
       <Icon size={20} className="text-gen-500" />
-      <div className="mt-3 text-xs text-[var(--muted)]">{label}</div>
-      <div className="mt-1 font-extrabold">{value}</div>
+
+      <div className="mt-3 text-xs text-[var(--muted)]">
+        {label}
+      </div>
+
+      <div className="mt-1 font-extrabold">
+        {value}
+      </div>
     </div>
   );
 }
@@ -54,8 +59,12 @@ type Task = {
 
 export function AppDetail({ app }: { app: AppItem }) {
   const [open, setOpen] = useState<string | null>("Introduction");
+
   const [showTasks, setShowTasks] = useState(false);
-  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+
+  const [completedTasks, setCompletedTasks] = useState<string[]>(
+    []
+  );
 
   const sections = [
     [
@@ -123,7 +132,9 @@ export function AppDetail({ app }: { app: AppItem }) {
   ];
 
   const completedCount = completedTasks.length;
-  const allCompleted = completedCount === tasks.length;
+
+  const allCompleted =
+    completedCount === tasks.length;
 
   const share = async () => {
     if (navigator.share) {
@@ -133,7 +144,9 @@ export function AppDetail({ app }: { app: AppItem }) {
         url: window.location.href,
       });
     } else {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(
+        window.location.href
+      );
     }
   };
 
@@ -154,9 +167,13 @@ export function AppDetail({ app }: { app: AppItem }) {
   return (
     <>
       <div className="container pt-5 sm:pt-8">
+
         {/* Breadcrumb */}
         <div className="text-xs text-[var(--muted)]">
-          <Link href="/" className="hover:text-gen-500">
+          <Link
+            href="/"
+            className="hover:text-gen-500"
+          >
             Home
           </Link>{" "}
           /{" "}
@@ -175,6 +192,8 @@ export function AppDetail({ app }: { app: AppItem }) {
         {/* Hero */}
         <section className="surface mt-4 rounded-[30px] p-5 shadow-soft sm:p-8">
           <div className="flex flex-col gap-6 sm:flex-row">
+
+            {/* Icon */}
             <div className="relative mx-auto h-28 w-28 shrink-0 sm:mx-0">
               <img
                 src={app.icon}
@@ -190,6 +209,7 @@ export function AppDetail({ app }: { app: AppItem }) {
             </div>
 
             <div className="min-w-0 flex-1">
+
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-3xl font-black tracking-[-0.045em] sm:text-4xl">
                   {app.name}
@@ -207,12 +227,15 @@ export function AppDetail({ app }: { app: AppItem }) {
               </p>
 
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+
                 <span className="inline-flex items-center gap-1">
                   <Star
                     size={16}
                     className="fill-yellow-400 text-yellow-400"
                   />
+
                   <b>{app.rating}</b>
+
                   <span className="text-[var(--muted)]">
                     ({app.votes.toLocaleString()})
                   </span>
@@ -239,6 +262,8 @@ export function AppDetail({ app }: { app: AppItem }) {
               </p>
 
               <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+
+                {/* Download */}
                 <button
                   onClick={() => setShowTasks(true)}
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gen-500 px-6 font-extrabold text-white shadow-lg transition hover:bg-gen-600"
@@ -247,6 +272,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                   Download APK
                 </button>
 
+                {/* Share */}
                 <button
                   onClick={share}
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-[var(--border)] px-5 font-bold transition hover:bg-[var(--surface-2)]"
@@ -254,6 +280,7 @@ export function AppDetail({ app }: { app: AppItem }) {
                   <Share2 size={18} />
                   Share
                 </button>
+
               </div>
             </div>
           </div>
@@ -261,290 +288,427 @@ export function AppDetail({ app }: { app: AppItem }) {
 
         {/* App Info */}
         <section className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <Info icon={Code2} label="Version" value={app.version} />
-          <Info icon={HardDrive} label="Size" value={app.size} />
+
+          <Info
+            icon={Code2}
+            label="Version"
+            value={app.version}
+          />
+
+          <Info
+            icon={HardDrive}
+            label="Size"
+            value={app.size}
+          />
+
           <Info
             icon={Smartphone}
             label="Requirements"
             value={`Android ${app.android}`}
           />
-          <Info icon={UserRound} label="Publisher" value={app.publisher} />
-          <Info icon={Calendar} label="Last Updated" value={app.updated} />
+
+          <Info
+            icon={UserRound}
+            label="Publisher"
+            value={app.publisher}
+          />
+
+          <Info
+            icon={Calendar}
+            label="Last Updated"
+            value={app.updated}
+          />
+
         </section>
 
         {/* MOD Information */}
         {app.modInfo?.isMod && (
           <section className="surface mt-6 rounded-[30px] border border-gen-500/20 p-5 shadow-soft sm:p-7">
+
             <div className="flex items-start gap-3">
+
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gen-500 text-white">
                 <ShieldCheck size={22} />
               </div>
 
               <div className="min-w-0">
+
                 <h2 className="text-xl font-black tracking-[-0.025em]">
                   MOD Information
                 </h2>
 
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  This version is marked as {app.modInfo.label || "MOD"}.
+                  This version is marked as{" "}
+                  {app.modInfo.label || "MOD"}.
                 </p>
+
               </div>
             </div>
 
             {app.modInfo.features.length > 0 && (
               <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                {app.modInfo.features.map((feature) => (
-                  <div
-                    key={feature}
-                    className="flex items-center gap-2 rounded-xl bg-[var(--surface-2)] px-4 py-3 text-sm font-semibold"
-                  >
-                    <CheckCircle2
-                      size={17}
-                      className="shrink-0 text-gen-500"
-                    />
-                    {feature}
-                  </div>
-                ))}
+
+                {app.modInfo.features.map(
+                  (feature) => (
+                    <div
+                      key={feature}
+                      className="flex items-center gap-2 rounded-xl bg-[var(--surface-2)] px-4 py-3 text-sm font-semibold"
+                    >
+                      <CheckCircle2
+                        size={17}
+                        className="shrink-0 text-gen-500"
+                      />
+
+                      {feature}
+                    </div>
+                  )
+                )}
+
               </div>
             )}
+
           </section>
         )}
 
         {/* Screenshots */}
         <section className="surface mt-6 rounded-[30px] p-5 sm:p-7">
+
           <h2 className="text-2xl font-black tracking-[-0.035em]">
             Screenshots
           </h2>
 
           <div className="mt-5 flex snap-x gap-4 overflow-x-auto pb-2">
-            {app.screenshots.map((src, i) => (
-              <img
-                key={src}
-                src={src}
-                alt={`${app.name} screenshot ${i + 1}`}
-                className="h-[430px] w-[245px] shrink-0 snap-start rounded-[24px] object-cover shadow-card"
-              />
-            ))}
+
+            {app.screenshots.map(
+              (src, i) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt={`${app.name} screenshot ${i + 1}`}
+                  className="h-[430px] w-[245px] shrink-0 snap-start rounded-[24px] object-cover shadow-card"
+                />
+              )
+            )}
+
           </div>
         </section>
 
         {/* App Information */}
         <section className="mt-6">
+
           <h2 className="mb-4 text-2xl font-black tracking-[-0.035em]">
             App Information
           </h2>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            {sections.map(([title, body]) => (
-              <div
-                key={title}
-                className="surface overflow-hidden rounded-2xl"
-              >
-                <button
-                  onClick={() =>
-                    setOpen(open === title ? null : title)
-                  }
-                  className="flex w-full items-center justify-between p-5 text-left font-extrabold"
+
+            {sections.map(
+              ([title, body]) => (
+                <div
+                  key={title}
+                  className="surface overflow-hidden rounded-2xl"
                 >
-                  {title}
 
-                  <ChevronDown
-                    size={19}
-                    className={`transition ${
-                      open === title ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
+                  <button
+                    onClick={() =>
+                      setOpen(
+                        open === title
+                          ? null
+                          : title
+                      )
+                    }
+                    className="flex w-full items-center justify-between p-5 text-left font-extrabold"
+                  >
+                    {title}
 
-                {open === title && (
-                  <div className="border-t border-[var(--border)] px-5 pb-5 pt-4 text-sm leading-7 text-[var(--muted)]">
-                    {body}
-                  </div>
-                )}
-              </div>
-            ))}
+                    <ChevronDown
+                      size={19}
+                      className={`transition ${
+                        open === title
+                          ? "rotate-180"
+                          : ""
+                      }`}
+                    />
+                  </button>
+
+                  {open === title && (
+                    <div className="border-t border-[var(--border)] px-5 pb-5 pt-4 text-sm leading-7 text-[var(--muted)]">
+                      {body}
+                    </div>
+                  )}
+
+                </div>
+              )
+            )}
+
           </div>
         </section>
       </div>
 
-      {/* Download Task Modal */}
-      {showTasks && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4">
-          <div className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-[30px] border border-white/10 bg-[#101313] text-white shadow-2xl sm:max-w-lg sm:rounded-[30px]">
-            {/* Header */}
-            <div className="sticky top-0 z-10 border-b border-white/10 bg-[#101313]/95 p-5 backdrop-blur-xl sm:p-6">
-              <button
-                onClick={() => setShowTasks(false)}
-                className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white"
-                aria-label="Close"
-              >
-                <X size={19} />
-              </button>
+      {/* ================================================= */}
+      {/* DOWNLOAD TASK POPUP */}
+      {/* ================================================= */}
 
-              <div className="pr-10">
-                <div className="inline-flex items-center gap-2 rounded-full bg-gen-500/15 px-3 py-1.5 text-xs font-black text-gen-400">
-                  <ShieldCheck size={14} />
+      {showTasks && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+
+          <div className="relative max-h-[88vh] w-full max-w-sm overflow-y-auto rounded-[26px] border border-white/10 bg-[#101313] text-white shadow-2xl">
+
+            {/* LEFT CLOSE */}
+            <button
+              onClick={() =>
+                setShowTasks(false)
+              }
+              className="absolute left-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-white/60 transition hover:bg-white/10 hover:text-white"
+              aria-label="Close"
+            >
+              <X size={17} />
+            </button>
+
+            {/* RIGHT CLOSE */}
+            <button
+              onClick={() =>
+                setShowTasks(false)
+              }
+              className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-white/60 transition hover:bg-white/10 hover:text-white"
+              aria-label="Close"
+            >
+              <X size={17} />
+            </button>
+
+            {/* HEADER */}
+            <div className="border-b border-white/10 px-5 pb-4 pt-14">
+
+              <div className="text-center">
+
+                <div className="inline-flex items-center gap-2 rounded-full bg-gen-500/15 px-3 py-1.5 text-[10px] font-black tracking-wide text-gen-400">
+                  <ShieldCheck size={13} />
                   QUICK UNLOCK
                 </div>
 
-                <h2 className="mt-4 text-2xl font-black tracking-[-0.04em]">
+                <h2 className="mt-3 text-xl font-black tracking-[-0.035em]">
                   Unlock your download
                 </h2>
 
-                <p className="mt-2 text-sm leading-6 text-white/60">
+                <p className="mx-auto mt-1.5 max-w-[280px] text-xs leading-5 text-white/50">
                   Complete these quick tasks to continue to your download.
                 </p>
+
               </div>
 
-              {/* Progress */}
-              <div className="mt-5">
-                <div className="mb-2 flex items-center justify-between text-xs font-bold">
-                  <span className="text-white/60">
+              {/* PROGRESS */}
+              <div className="mt-4">
+
+                <div className="mb-1.5 flex items-center justify-between text-[10px] font-bold">
+
+                  <span className="text-white/40">
                     Progress
                   </span>
+
                   <span className="text-gen-400">
                     {completedCount}/{tasks.length}
                   </span>
+
                 </div>
 
-                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+
                   <div
                     className="h-full rounded-full bg-gen-500 transition-all duration-500"
                     style={{
-                      width: `${(completedCount / tasks.length) * 100}%`,
+                      width: `${
+                        (completedCount /
+                          tasks.length) *
+                        100
+                      }%`,
                     }}
                   />
+
                 </div>
               </div>
             </div>
 
-            {/* Tasks */}
-            <div className="space-y-3 p-5 sm:p-6">
-              {tasks.map((task, index) => {
-                const completed = completedTasks.includes(task.id);
+            {/* TASKS */}
+            <div className="space-y-2.5 p-4">
 
-                return (
-                  <div
-                    key={task.id}
-                    className={`relative overflow-hidden rounded-[22px] border p-4 transition-all duration-300 ${
-                      completed
-                        ? "border-emerald-400/30 bg-emerald-400/10"
-                        : "border-white/10 bg-white/[0.035]"
-                    }`}
-                  >
-                    <div className="flex gap-3">
-                      {/* Number/Icon */}
-                      <div
-                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
-                          completed
-                            ? "bg-emerald-500 text-white"
-                            : task.icon === "telegram"
-                              ? "bg-[#229ED9] text-white"
-                              : task.icon === "instagram"
-                                ? "bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white"
-                                : "bg-gradient-to-br from-pink-500 via-red-500 to-orange-400 text-white"
-                        }`}
-                      >
-                        {completed ? (
-                          <Check size={21} strokeWidth={3} />
-                        ) : task.icon === "telegram" ? (
-                          <Send size={20} fill="currentColor" />
-                        ) : task.icon === "instagram" ? (
-                          <Instagram size={21} />
-                        ) : (
-                          <Heart size={21} fill="currentColor" />
-                        )}
-                      </div>
+              {tasks.map(
+                (task, index) => {
+                  const completed =
+                    completedTasks.includes(
+                      task.id
+                    );
 
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <div className="text-[11px] font-black uppercase tracking-wider text-white/40">
-                              Task {index + 1}
-                            </div>
+                  return (
+                    <div
+                      key={task.id}
+                      className={`rounded-[18px] border p-3 transition-all duration-300 ${
+                        completed
+                          ? "border-emerald-400/30 bg-emerald-400/10"
+                          : "border-white/10 bg-white/[0.035]"
+                      }`}
+                    >
 
-                            <h3 className="mt-0.5 text-[15px] font-extrabold">
-                              {task.title}
-                            </h3>
-                          </div>
+                      <div className="flex gap-3">
 
-                          {completed && (
-                            <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-1 text-[10px] font-black text-emerald-400">
-                              COMPLETED
-                            </span>
+                        {/* TASK ICON */}
+                        <div
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                            completed
+                              ? "bg-emerald-500 text-white"
+                              : task.icon ===
+                                  "telegram"
+                                ? "bg-[#229ED9] text-white"
+                                : task.icon ===
+                                    "instagram"
+                                  ? "bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white"
+                                  : "bg-gradient-to-br from-pink-500 via-red-500 to-orange-400 text-white"
+                          }`}
+                        >
+
+                          {completed ? (
+                            <Check
+                              size={18}
+                              strokeWidth={3}
+                            />
+                          ) : task.icon ===
+                            "telegram" ? (
+                            <Send
+                              size={17}
+                              fill="currentColor"
+                            />
+                          ) : task.icon ===
+                            "instagram" ? (
+                            <Instagram size={18} />
+                          ) : (
+                            <Heart
+                              size={18}
+                              fill="currentColor"
+                            />
                           )}
+
                         </div>
 
-                        <p className="mt-1.5 text-xs leading-5 text-white/50">
-                          {task.description}
-                        </p>
+                        {/* TASK CONTENT */}
+                        <div className="min-w-0 flex-1">
 
-                        {!completed ? (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            <a
-                              href={task.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-extrabold text-white transition hover:-translate-y-0.5 ${
-                                task.icon === "telegram"
-                                  ? "bg-[#229ED9] hover:bg-[#1d8fc4]"
-                                  : task.icon === "instagram"
-                                    ? "bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#FCAF45]"
-                                    : "bg-gradient-to-r from-pink-500 via-red-500 to-orange-400"
-                              }`}
-                            >
-                              {task.button}
-                              <ArrowUpRight size={14} />
-                            </a>
+                          <div className="flex items-start justify-between gap-2">
 
-                            <button
-                              onClick={() => markCompleted(task.id)}
-                              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-bold text-white/75 transition hover:bg-white/10 hover:text-white"
-                            >
-                              <Check size={14} />
-                              I Completed
-                            </button>
+                            <div>
+
+                              <div className="text-[9px] font-black uppercase tracking-wider text-white/35">
+                                Task {index + 1}
+                              </div>
+
+                              <h3 className="mt-0.5 text-[13px] font-extrabold leading-5">
+                                {task.title}
+                              </h3>
+
+                            </div>
+
+                            {completed && (
+                              <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[8px] font-black text-emerald-400">
+                                DONE
+                              </span>
+                            )}
+
                           </div>
-                        ) : (
-                          <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400">
-                            <CheckCircle2 size={15} />
-                            Task completed
-                          </div>
-                        )}
+
+                          <p className="mt-1 text-[10px] leading-4 text-white/45">
+                            {task.description}
+                          </p>
+
+                          {!completed ? (
+                            <div className="mt-2.5 flex gap-1.5">
+
+                              {/* OPEN TASK */}
+                              <a
+                                href={task.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[10px] font-extrabold text-white transition hover:-translate-y-0.5 ${
+                                  task.icon ===
+                                  "telegram"
+                                    ? "bg-[#229ED9] hover:bg-[#1d8fc4]"
+                                    : task.icon ===
+                                        "instagram"
+                                      ? "bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#FCAF45]"
+                                      : "bg-gradient-to-r from-pink-500 via-red-500 to-orange-400"
+                                }`}
+                              >
+
+                                {task.button}
+
+                                <ArrowUpRight
+                                  size={11}
+                                />
+
+                              </a>
+
+                              {/* COMPLETED */}
+                              <button
+                                onClick={() =>
+                                  markCompleted(
+                                    task.id
+                                  )
+                                }
+                                className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[10px] font-bold text-white/65 transition hover:bg-white/10 hover:text-white"
+                              >
+
+                                <Check size={11} />
+
+                                I Completed
+
+                              </button>
+
+                            </div>
+                          ) : (
+                            <div className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400">
+
+                              <CheckCircle2 size={12} />
+
+                              Task completed
+
+                            </div>
+                          )}
+
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                }
+              )}
 
-              {/* Continue */}
-              <div className="pt-2">
+              {/* CONTINUE DOWNLOAD */}
+              <div className="pt-1">
+
                 <button
                   onClick={continueDownload}
                   disabled={!allCompleted}
-                  className={`flex min-h-13 w-full items-center justify-center gap-2 rounded-2xl px-5 font-black transition-all duration-300 ${
+                  className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 text-xs font-black transition-all duration-300 ${
                     allCompleted
                       ? "bg-gen-500 text-white shadow-lg shadow-gen-500/20 hover:-translate-y-0.5 hover:bg-gen-600"
-                      : "cursor-not-allowed bg-white/10 text-white/30"
+                      : "cursor-not-allowed bg-white/10 text-white/25"
                   }`}
                 >
+
                   {allCompleted ? (
                     <>
-                      <ArrowDownToLine size={19} />
+                      <ArrowDownToLine size={16} />
                       Continue to Download
                     </>
                   ) : (
                     <>
-                      <ShieldCheck size={18} />
+                      <ShieldCheck size={15} />
                       Complete all tasks to unlock
                     </>
                   )}
+
                 </button>
 
-                <p className="mt-3 text-center text-[10px] leading-4 text-white/30">
-                  By continuing, you confirm that you completed the tasks
-                  above.
+                <p className="mt-2 text-center text-[9px] leading-4 text-white/25">
+                  Complete the tasks above and confirm when finished.
                 </p>
+
               </div>
             </div>
           </div>
