@@ -190,7 +190,7 @@ export function AppDetail({ app }: { app: AppItem }) {
       return;
     }
 
-    window.location.href = app.downloadUrl;
+    window.open(app.downloadUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
