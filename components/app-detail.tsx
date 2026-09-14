@@ -186,12 +186,8 @@ export function AppDetail({ app }: { app: AppItem }) {
   };
 
   const continueDownload = () => {
-    if (!allCompleted) {
-      return;
-    }
-
-    window.open(app.downloadUrl, "_blank", "noopener,noreferrer");
-  };
+  window.open(app.downloadUrl, "_blank", "noopener,noreferrer");
+};
 
   return (
     <>
