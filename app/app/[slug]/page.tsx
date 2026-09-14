@@ -37,11 +37,18 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${app.name} – Latest Android Version`;
+  const title =
+    app.seoTitle?.trim() ||
+    `${app.name} – Latest Android Version | GenMod`;
 
   const description =
-    `Explore ${app.name} for Android on GenMod. View the latest version, ` +
-    `features, screenshots, requirements, app information and updates.`;
+    app.seoDescription?.trim() ||
+    `Explore ${app.name} for Android on GenMod. View the latest version, features, screenshots, requirements, app information and updates.`;
+
+  const keywords = app.seoKeywords
+    ?.split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
 
   const url = `${siteUrl}/app/${app.slug}`;
   const iconUrl = absoluteUrl(app.icon);
@@ -49,6 +56,8 @@ export async function generateMetadata({
   return {
     title,
     description,
+
+    ...(keywords && keywords.length > 0 ? { keywords } : {}),
 
     alternates: {
       canonical: url,
@@ -155,6 +164,18 @@ export default async function AppPage({
       "@type": "Organization",
       name: app.publisher,
     },
+
+    ...(app.rating > 0 && app.votes > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: app.rating,
+            ratingCount: app.votes,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   };
 
   return (

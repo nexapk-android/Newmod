@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { apps, categories } from "@/lib/data";
+import { categories } from "@/lib/data";
+import { getPublishedApps } from "@/lib/apps";
 
 const siteUrl = "https://genmod.in";
 
@@ -20,7 +21,7 @@ function getValidDate(value: string) {
   return date;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticUrls: MetadataRoute.Sitemap = [
     {
       url: siteUrl,
@@ -85,7 +86,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const appUrls: MetadataRoute.Sitemap = apps.map((app) => ({
+  const publishedApps = await getPublishedApps();
+
+  const appUrls: MetadataRoute.Sitemap = publishedApps.map((app) => ({
     url: `${siteUrl}/app/${app.slug}`,
     lastModified: getValidDate(app.updated),
     changeFrequency: "weekly",

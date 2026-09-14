@@ -106,39 +106,42 @@ export function AppDetail({ app }: { app: AppItem }) {
   ];
 
   const tasks: Task[] = [
-    {
+    app.taskTelegramEnabled && {
       id: "telegram",
       title: "Join GenMod on Telegram",
       description:
         "Join our Telegram channel to get the latest GenMod updates and announcements.",
       button: "Join Telegram",
-      url: "https://t.me/Genmodapk",
+      url: app.taskTelegramUrl,
       icon: "telegram",
     },
-    {
+    app.taskInstagramEnabled && {
       id: "instagram",
       title: "Follow GenMod on Instagram",
       description:
         "Follow the Instagram account to stay updated with GenMod content.",
       button: "Follow Instagram",
-      url: "https://www.instagram.com/genmodapk?stkn=MXYybHlpNnp0OTd3aw==",
+      url: app.taskInstagramUrl,
       icon: "instagram",
     },
-    {
+    app.taskReelEnabled && {
       id: "reel",
       title: "Like & Comment on our Reel",
       description:
         "Open Instagram, like the Reel and leave a good comment to support GenMod.",
       button: "Open Reel",
-      url: "https://www.instagram.com/reel/DdPGZG_zWYf/?stkn=MWp1cXFtbHpqNjcweA==",
+      url: app.taskReelUrl,
       icon: "reel",
     },
-  ];
+  ].filter(Boolean) as Task[];
 
   const completedCount = completedTasks.length;
 
   const allCompleted =
     completedCount === tasks.length;
+
+  const taskProtectionActive =
+    app.taskPopupEnabled && tasks.length > 0;
 
   const share = async () => {
     if (navigator.share) {
@@ -296,7 +299,13 @@ export function AppDetail({ app }: { app: AppItem }) {
 
                 {/* Download Button */}
                 <button
-                  onClick={() => setShowTasks(true)}
+                  onClick={() => {
+                    if (taskProtectionActive) {
+                      setShowTasks(true);
+                    } else {
+                      continueDownload();
+                    }
+                  }}
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gen-500 px-6 font-extrabold text-white shadow-lg transition hover:bg-gen-600"
                 >
                   <ArrowDownToLine size={19} />

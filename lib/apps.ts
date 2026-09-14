@@ -24,6 +24,18 @@ type DbApp = {
   votes: number | null;
   downloads: number | null;
   published: boolean | null;
+
+  task_popup_enabled: boolean | null;
+  task_telegram_enabled: boolean | null;
+  task_telegram_url: string | null;
+  task_instagram_enabled: boolean | null;
+  task_instagram_url: string | null;
+  task_reel_enabled: boolean | null;
+  task_reel_url: string | null;
+
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string | null;
 };
 
 function mapDbApp(app: DbApp): AppItem {
@@ -57,6 +69,19 @@ function mapDbApp(app: DbApp): AppItem {
       label: app.mod_label || "MOD",
       features: app.mod_features || [],
     },
+
+    taskPopupEnabled: Boolean(app.task_popup_enabled),
+    taskTelegramEnabled: app.task_telegram_enabled !== false,
+    taskTelegramUrl: app.task_telegram_url || "https://t.me/Genmodapk",
+    taskInstagramEnabled: app.task_instagram_enabled !== false,
+    taskInstagramUrl:
+      app.task_instagram_url || "https://www.instagram.com/instagram/",
+    taskReelEnabled: app.task_reel_enabled !== false,
+    taskReelUrl: app.task_reel_url || "https://www.instagram.com/reels/",
+
+    seoTitle: app.seo_title || "",
+    seoDescription: app.seo_description || "",
+    seoKeywords: app.seo_keywords || "",
   };
 }
 

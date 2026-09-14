@@ -50,6 +50,18 @@ type ExistingApp = {
   votes: number | null;
   downloads: number | null;
   published: boolean | null;
+
+  task_popup_enabled: boolean | null;
+  task_telegram_enabled: boolean | null;
+  task_telegram_url: string | null;
+  task_instagram_enabled: boolean | null;
+  task_instagram_url: string | null;
+  task_reel_enabled: boolean | null;
+  task_reel_url: string | null;
+
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string | null;
 };
 
 export default function EditAppPage({
@@ -92,6 +104,18 @@ export default function EditAppPage({
     votes: "0",
     downloads: "0",
     published: false,
+
+    task_popup_enabled: true,
+    task_telegram_enabled: true,
+    task_telegram_url: "https://t.me/Genmodapk",
+    task_instagram_enabled: true,
+    task_instagram_url: "https://www.instagram.com/instagram/",
+    task_reel_enabled: true,
+    task_reel_url: "https://www.instagram.com/reels/",
+
+    seo_title: "",
+    seo_description: "",
+    seo_keywords: "",
   });
 
   useEffect(() => {
@@ -169,6 +193,21 @@ export default function EditAppPage({
         downloads: String(app.downloads ?? 0),
 
         published: Boolean(app.published),
+
+        task_popup_enabled: Boolean(app.task_popup_enabled),
+        task_telegram_enabled: app.task_telegram_enabled !== false,
+        task_telegram_url:
+          app.task_telegram_url || "https://t.me/Genmodapk",
+        task_instagram_enabled: app.task_instagram_enabled !== false,
+        task_instagram_url:
+          app.task_instagram_url || "https://www.instagram.com/instagram/",
+        task_reel_enabled: app.task_reel_enabled !== false,
+        task_reel_url:
+          app.task_reel_url || "https://www.instagram.com/reels/",
+
+        seo_title: app.seo_title || "",
+        seo_description: app.seo_description || "",
+        seo_keywords: app.seo_keywords || "",
       });
 
       setExistingIcon(app.icon || "");
@@ -432,6 +471,18 @@ export default function EditAppPage({
           downloads: Number(form.downloads) || 0,
 
           published: form.published,
+
+          task_popup_enabled: form.task_popup_enabled,
+          task_telegram_enabled: form.task_telegram_enabled,
+          task_telegram_url: form.task_telegram_url.trim(),
+          task_instagram_enabled: form.task_instagram_enabled,
+          task_instagram_url: form.task_instagram_url.trim(),
+          task_reel_enabled: form.task_reel_enabled,
+          task_reel_url: form.task_reel_url.trim(),
+
+          seo_title: form.seo_title.trim() || null,
+          seo_description: form.seo_description.trim() || null,
+          seo_keywords: form.seo_keywords.trim() || null,
 
           updated_at: new Date().toISOString(),
         })
@@ -1055,6 +1106,148 @@ export default function EditAppPage({
               placeholder="https://..."
               className="admin-input"
             />
+          </section>
+
+          {/* TASK PROTECTION */}
+
+          <section className="surface rounded-[26px] p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black">
+                  Download Task Protection
+                </h2>
+                <p className="mt-1 text-xs text-[var(--muted)]">
+                  Enable the same task popup shown on the app details page.
+                </p>
+              </div>
+
+              <label className="relative inline-flex shrink-0 cursor-pointer items-center">
+                <input
+                  type="checkbox"
+                  checked={form.task_popup_enabled}
+                  onChange={(e) =>
+                    updateField("task_popup_enabled", e.target.checked)
+                  }
+                  className="peer sr-only"
+                />
+                <span className="h-7 w-12 rounded-full bg-gray-300 transition peer-checked:bg-gen-500" />
+                <span className="absolute left-1 h-5 w-5 rounded-full bg-white shadow transition peer-checked:translate-x-5" />
+              </label>
+            </div>
+
+            {form.task_popup_enabled && (
+              <div className="mt-6 space-y-5">
+                <p className="text-xs text-[var(--muted)]">
+                  Turn individual tasks on/off and change their destination links.
+                  Verification uses the existing 6-second animation flow.
+                </p>
+
+                {[
+                  {
+                    key: "telegram",
+                    enabled: "task_telegram_enabled",
+                    url: "task_telegram_url",
+                    title: "Telegram",
+                    placeholder: "https://t.me/Genmodapk",
+                  },
+                  {
+                    key: "instagram",
+                    enabled: "task_instagram_enabled",
+                    url: "task_instagram_url",
+                    title: "Instagram Profile",
+                    placeholder: "https://www.instagram.com/yourprofile/",
+                  },
+                  {
+                    key: "reel",
+                    enabled: "task_reel_enabled",
+                    url: "task_reel_url",
+                    title: "Instagram Reel",
+                    placeholder: "https://www.instagram.com/reel/...",
+                  },
+                ].map((task) => (
+                  <div
+                    key={task.key}
+                    className="rounded-2xl border border-[var(--border)] p-4"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="font-bold">{task.title}</span>
+                      <label className="relative inline-flex shrink-0 cursor-pointer items-center">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(form[task.enabled as keyof typeof form])}
+                          onChange={(e) =>
+                            updateField(task.enabled, e.target.checked)
+                          }
+                          className="peer sr-only"
+                        />
+                        <span className="h-6 w-11 rounded-full bg-gray-300 transition peer-checked:bg-gen-500" />
+                        <span className="absolute left-1 h-4 w-4 rounded-full bg-white shadow transition peer-checked:translate-x-5" />
+                      </label>
+                    </div>
+
+                    <input
+                      type="url"
+                      value={String(form[task.url as keyof typeof form])}
+                      onChange={(e) =>
+                        updateField(task.url, e.target.value)
+                      }
+                      placeholder={task.placeholder}
+                      className="admin-input mt-3"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* SEO */}
+
+          <section className="surface rounded-[26px] p-5 sm:p-6">
+            <h2 className="text-xl font-black">SEO Settings</h2>
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Leave blank to let GenMod generate sensible SEO text from the app data.
+            </p>
+
+            <div className="mt-5 space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-bold">
+                  SEO Title
+                </label>
+                <input
+                  value={form.seo_title}
+                  onChange={(e) => updateField("seo_title", e.target.value)}
+                  placeholder="CapCut Pro Mod APK Latest Version | GenMod"
+                  className="admin-input"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold">
+                  SEO Description
+                </label>
+                <textarea
+                  rows={4}
+                  value={form.seo_description}
+                  onChange={(e) =>
+                    updateField("seo_description", e.target.value)
+                  }
+                  placeholder="Download and explore the latest CapCut Pro Mod APK..."
+                  className="admin-input min-h-24 resize-y"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold">
+                  SEO Keywords
+                </label>
+                <input
+                  value={form.seo_keywords}
+                  onChange={(e) => updateField("seo_keywords", e.target.value)}
+                  placeholder="capcut pro apk, capcut mod apk, video editor"
+                  className="admin-input"
+                />
+              </div>
+            </div>
           </section>
 
           {/* PUBLISH */}

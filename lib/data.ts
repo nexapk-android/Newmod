@@ -31,6 +31,18 @@ export type AppItem = {
   downloadUrl: string;
 
   modInfo: ModInfo;
+
+  taskPopupEnabled: boolean;
+  taskTelegramEnabled: boolean;
+  taskTelegramUrl: string;
+  taskInstagramEnabled: boolean;
+  taskInstagramUrl: string;
+  taskReelEnabled: boolean;
+  taskReelUrl: string;
+
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
 };
 
 /* =========================
@@ -112,6 +124,16 @@ export const apps: AppItem[] = [
         "Additional creative resources",
       ],
     },
+    taskPopupEnabled: false,
+    taskTelegramEnabled: true,
+    taskTelegramUrl: "https://t.me/Genmodapk",
+    taskInstagramEnabled: true,
+    taskInstagramUrl: "https://www.instagram.com/instagram/",
+    taskReelEnabled: true,
+    taskReelUrl: "https://www.instagram.com/reels/",
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
   },
 
   {
@@ -169,6 +191,16 @@ export const apps: AppItem[] = [
         "Extra features",
       ],
     },
+    taskPopupEnabled: false,
+    taskTelegramEnabled: true,
+    taskTelegramUrl: "https://t.me/Genmodapk",
+    taskInstagramEnabled: true,
+    taskInstagramUrl: "https://www.instagram.com/instagram/",
+    taskReelEnabled: true,
+    taskReelUrl: "https://www.instagram.com/reels/",
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
   },
 
   {
@@ -226,6 +258,16 @@ export const apps: AppItem[] = [
         "Extra customization",
       ],
     },
+    taskPopupEnabled: false,
+    taskTelegramEnabled: true,
+    taskTelegramUrl: "https://t.me/Genmodapk",
+    taskInstagramEnabled: true,
+    taskInstagramUrl: "https://www.instagram.com/instagram/",
+    taskReelEnabled: true,
+    taskReelUrl: "https://www.instagram.com/reels/",
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
   },
 
   {
@@ -283,6 +325,16 @@ export const apps: AppItem[] = [
         "Extra features",
       ],
     },
+    taskPopupEnabled: false,
+    taskTelegramEnabled: true,
+    taskTelegramUrl: "https://t.me/Genmodapk",
+    taskInstagramEnabled: true,
+    taskInstagramUrl: "https://www.instagram.com/instagram/",
+    taskReelEnabled: true,
+    taskReelUrl: "https://www.instagram.com/reels/",
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
   },
 ];
 
