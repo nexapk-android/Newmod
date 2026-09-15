@@ -6,31 +6,34 @@ import "./globals.css";
 
 const siteUrl = "https://genmod.in";
 
+const siteDescription =
+  "GENMOD.IN - Free MOD APKS, MOD Games, & Premium Apps | 100% Working Downloads.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default: "GenMod — Download & Enjoy",
-    template: "%s | GenMod",
+    default: "GENMOD.IN",
+    template: "%s | GENMOD.IN",
   },
 
-  description:
-    "GenMod is a fast, clean and mobile-friendly platform to discover apps and games, explore features, screenshots, requirements and the latest versions.",
+  description: siteDescription,
 
-  applicationName: "GenMod",
+  applicationName: "GENMOD.IN",
 
   authors: [
     {
-      name: "GenMod",
+      name: "GENMOD.IN",
     },
   ],
 
-  creator: "GenMod",
-  publisher: "GenMod",
+  creator: "GENMOD.IN",
+  publisher: "GENMOD.IN",
 
   robots: {
     index: true,
     follow: true,
+
     googleBot: {
       index: true,
       follow: true,
@@ -45,23 +48,37 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "GenMod — Download & Enjoy",
-    description:
-      "Discover apps and games on GenMod. Explore latest versions, features, screenshots and Android requirements.",
+    title: "GENMOD.IN",
+    description: siteDescription,
     url: siteUrl,
-    siteName: "GenMod",
+    siteName: "GENMOD.IN - Modded APKs & Premium Android Apps",
     type: "website",
     locale: "en_US",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "GenMod — Download & Enjoy",
-    description:
-      "Discover apps and games on GenMod with clean, fast and mobile-first pages.",
+    title: "GENMOD.IN",
+    description: siteDescription,
   },
 
   category: "technology",
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "GENMOD.IN - Modded APKs & Premium Android Apps",
+  alternateName: "GENMOD.IN",
+  url: siteUrl,
+  description: siteDescription,
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "GENMOD.IN",
+  url: siteUrl,
 };
 
 export default function RootLayout({
@@ -78,6 +95,26 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(websiteSchema).replace(
+                /</g,
+                "\\u003c"
+              ),
+            }}
+          />
+
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(organizationSchema).replace(
+                /</g,
+                "\\u003c"
+              ),
+            }}
+          />
+
           <Header />
 
           <main>{children}</main>
