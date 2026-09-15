@@ -22,78 +22,115 @@ function getValidDate(value: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date();
+
   const staticUrls: MetadataRoute.Sitemap = [
     {
       url: siteUrl,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "daily",
       priority: 1,
     },
+
+    {
+      url: `${siteUrl}/apps`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+
+    {
+      url: `${siteUrl}/games`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+
+    {
+      url: `${siteUrl}/faq`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+
     {
       url: `${siteUrl}/latest`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "daily",
       priority: 0.9,
     },
+
     {
       url: `${siteUrl}/trending`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "daily",
       priority: 0.9,
     },
+
     {
       url: `${siteUrl}/categories`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
     },
+
     {
       url: `${siteUrl}/about`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
     },
+
     {
       url: `${siteUrl}/contact`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
     },
+
     {
       url: `${siteUrl}/privacy`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,
     },
+
     {
       url: `${siteUrl}/terms`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,
     },
+
     {
       url: `${siteUrl}/dmca`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,
     },
   ];
 
-  const categoryUrls: MetadataRoute.Sitemap = categories.map((category) => ({
-    url: `${siteUrl}/category/${categorySlug(category)}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
+  const categoryUrls: MetadataRoute.Sitemap =
+    categories.map((category) => ({
+      url: `${siteUrl}/category/${categorySlug(category)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    }));
 
   const publishedApps = await getPublishedApps();
 
-  const appUrls: MetadataRoute.Sitemap = publishedApps.map((app) => ({
-    url: `${siteUrl}/app/${app.slug}`,
-    lastModified: getValidDate(app.updated),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  const appUrls: MetadataRoute.Sitemap =
+    publishedApps.map((app) => ({
+      url: `${siteUrl}/app/${app.slug}`,
+      lastModified: getValidDate(app.updated),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
 
-  return [...staticUrls, ...categoryUrls, ...appUrls];
+  return [
+    ...staticUrls,
+    ...categoryUrls,
+    ...appUrls,
+  ];
 }
