@@ -89,13 +89,13 @@ export function Header() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-black">
-                  GENMOD.IN
-                </div>
+  <div>
+    <div className="text-2xl font-extrabold tracking-[0.08em] leading-none">
+      GEN<span className="text-gen-500">MOD</span><span className="text-[0.9em]">.IN</span>
+    </div>
 
                 <div className="text-[9px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">
-                  download & more
+                  download & enjoy
                 </div>
               </div>
 
