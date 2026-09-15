@@ -47,11 +47,11 @@ export function Header() {
             className="flex min-w-0 flex-col items-center leading-none"
           >
             <span className="text-[22px] font-black tracking-[-0.06em] sm:text-[26px]">
-              GENMOD.IN
+              GENMODAPK
             </span>
 
             <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.34em] text-[var(--muted)]">
-              download & more
+              download & enjoy
             </span>
           </Link>
 
