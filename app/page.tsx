@@ -15,6 +15,8 @@ import { AppCard } from "@/components/app-card";
 import { Section } from "@/components/section";
 
 const siteUrl = "https://genmod.in";
+const siteDescription =
+  "GENMOD.IN - Free MOD APKS, MOD Games, & Premium Apps | 100% Working Downloads.";
 
 function categorySlug(category: string) {
   return category
@@ -24,32 +26,29 @@ function categorySlug(category: string) {
 }
 
 export const metadata: Metadata = {
-  title: "GenMod — Download & Enjoy",
-  description:
-    "Discover the latest Android apps and games on GenMod. Explore app features, screenshots, versions, requirements and updates in a fast, mobile-friendly experience.",
+  title: "GENMOD.IN",
+
+  description: siteDescription,
 
   alternates: {
     canonical: siteUrl,
   },
 
   openGraph: {
-    title: "GenMod — Download & Enjoy",
-    description:
-      "Discover the latest Android apps and games on GenMod. Explore features, screenshots, versions and updates.",
+    title: "GENMOD.IN",
+    description: siteDescription,
     url: siteUrl,
-    siteName: "GenMod",
+    siteName: "GENMOD.IN - Modded APKs & Premium Android Apps",
     type: "website",
     locale: "en_US",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "GenMod — Download & Enjoy",
-    description:
-      "Discover the latest Android apps and games on GenMod.",
+    title: "GENMOD.IN",
+    description: siteDescription,
   },
 };
-
 export default async function HomePage() {
   const apps = await getPublishedApps();
   const trendingApps = [...apps]
@@ -57,20 +56,20 @@ export default async function HomePage() {
     .slice(0, 3);
 
   const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "GenMod",
-    url: siteUrl,
-    description:
-      "Discover the latest Android apps and games on GenMod.",
-  };
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "GENMOD.IN - Modded APKs & Premium Android Apps",
+  alternateName: "GENMOD.IN",
+  url: siteUrl,
+  description: siteDescription,
+};
 
   const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "GenMod",
-    url: siteUrl,
-  };
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "GENMOD.IN",
+  url: siteUrl,
+};
 
   return (
     <>
