@@ -202,8 +202,8 @@ export default async function HomePage() {
       <div className="container">
         {/* Featured */}
         <Section
-          title="Featured Apps"
-          subtitle="Explore popular Android apps and games selected for GenMod."
+          title="Latest Apps"
+          subtitle="Explore popular Android apps and games."
         >
           <div className="app-grid">
             {apps.slice(0, 6).map((app) => (
